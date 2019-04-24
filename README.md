@@ -10,7 +10,7 @@ python generator.py
 ```
 
 ## ToDo
-- [ ] lab1
+- [x] lab1
 
 - [ ] lab2
 
