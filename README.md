@@ -12,7 +12,7 @@ python generator.py
 ## ToDo
 - [x] lab1
 
-- [ ] lab2
+- [x] lab2
 
 - [ ] lab3
 
