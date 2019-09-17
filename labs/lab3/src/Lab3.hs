@@ -18,37 +18,62 @@ import Prelude hiding ( Monoid(..), elem, maximum, intersperse, transpose
 -- Recursive and higher-order functions
 
 elem :: Eq a => a -> [a] -> Bool
-elem = undefined
+elem _ [] = False
+elem t (x:xs) = if t == x then True else elem t xs
 
 maximum :: Ord a => [a] -> a
-maximum = undefined
+maximum (x:[]) = x
+maximum (x:y:[]) = if x > y then x else y
+maximum (x:y:xs) = if x > y then maximum (x:xs) else maximum (y:xs)
 
 intersperse :: a -> [a] -> [a]
-intersperse = undefined
+intersperse _ [] = []
+intersperse _ (x:[]) = [x]
+intersperse t (x:xs) = x:t:(intersperse t xs)
 
 any :: (a -> Bool) -> [a] -> Bool
-any = undefined
+any _ [] = False
+any f (x:xs) = if f x then True else any f xs
 
 all :: (a -> Bool) -> [a] -> Bool
-all = undefined
+all _ [] = True
+all f (x:xs) = if f x then all f xs else False
 
 flip :: (a -> b -> c) -> b -> a -> c
-flip = undefined
+flip f x y = f y x
 
 takeWhile :: (a -> Bool) -> [a] -> [a]
-takeWhile = undefined
+takeWhile _ [] = []
+takeWhile f (x:xs) = if f x then x:(takeWhile f xs) else []
 
 zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
-zipWith = undefined
+zipWith _ _ [] = []
+zipWith _ [] _ = []
+zipWith f (x:xs) (y:ys) = (f x y):(zipWith f xs ys)
 
 groupBy :: (a -> a -> Bool) -> [a] -> [[a]]
-groupBy = undefined
+groupBy _ [] = []
+groupBy _ (x:[]) = [[x]]
+groupBy f (x:y:xs) = if f x y then [x]:(groupBy f (y:xs)) else [[x]]++(groupBy f (y:xs))
 
 subsequences :: [a] -> [[a]]
-subsequences = undefined
+subsequences [] = [[]]
+subsequences (x:[]) = [[], [x]]
+subsequences (x:xs) = (map (\a -> a) (subsequences xs)) ++ (map (\a -> x:a) (subsequences xs))
+
+shuffle :: Eq a => [a] -> [[a]]
+shuffle [] = [[]]
+shuffle (x:[]) = [[x]]
+shuffle (x:y:[]) = [[x, y], [y, x]]
+shuffle (x:y:xs) = (map (\z -> [x] ++ z ++ [y]) others) ++ (map (\z -> [y] ++ z ++ [x]) others)
+    where
+        others = shuffle xs
 
 permutations :: Eq a => [a] -> [[a]]
-permutations = undefined
+permutations [] = [[]]
+permutations (x:[]) = [[x]]
+permutations (x:y:[]) = [[x, y], [y, x]]
+permutations (x:xs) = (map (\y -> x:y) $ (permutations xs)) ++ (map (\y -> y++[x]) $ permutations xs)
 
 --------------------------------------------------------------------------------
 -- Monoids
@@ -64,15 +89,15 @@ class Monoid a where
     mempty  :: a
     mappend :: a -> a -> a
     mconcat :: [a] -> a
-    mconcat = undefined
+    mconcat = foldr mappend mempty
 
 instance Monoid Int where
-    mempty  = undefined
-    mappend = undefined
+    mempty  = 0
+    mappend = (+)
 
 instance Monoid [a] where
-    mempty  = undefined
-    mappend = undefined
+    mempty  = []
+    mappend = (++)
 
 instance Monoid b => Monoid (a -> b) where
     mempty  = undefined
